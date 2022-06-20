@@ -5,9 +5,9 @@ function DefaultLayout({ children }) {
     return (
         <div>
             <Header />
-            <div className="container">
+            <div className="grid grid-cols-4">
                 <Sidebar />
-                <div className="content">{children}</div>
+                <div className="bg-red-500 col-span-3 rounded-lg">{children}</div>
             </div>
         </div>
     );
