@@ -7,7 +7,6 @@ const navigation = [
     { name: 'Khám phá', href: '#', current: true },
     { name: 'Bạn bè', href: '#', current: false },
     { name: 'Khuyến mãi', href: '#', current: false },
-    { name: 'Về tao', href: '#', current: false },
 ];
 
 function classNames(...classes) {
@@ -16,7 +15,7 @@ function classNames(...classes) {
 
 export default function Header() {
     return (
-        <Disclosure as="nav" className="bg-slate-300 mb-3 shadow-md">
+        <Disclosure as="nav" className="bg-slate-300 shadow-md w-full fixed">
             {({ open }) => (
                 <>
                     <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
@@ -127,7 +126,7 @@ export default function Header() {
                                             <Menu.Item>
                                                 {({ active }) => (
                                                     <a
-                                                        href="#"
+                                                        href="/upload"
                                                         className={classNames(
                                                             active ? 'bg-gray-100' : '',
                                                             'block px-4 py-2 text-sm text-gray-700',
@@ -140,7 +139,7 @@ export default function Header() {
                                             <Menu.Item>
                                                 {({ active }) => (
                                                     <a
-                                                        href="#"
+                                                        href="/login"
                                                         className={classNames(
                                                             active ? 'bg-gray-100' : '',
                                                             'block px-4 py-2 text-sm text-gray-700',
