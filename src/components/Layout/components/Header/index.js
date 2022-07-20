@@ -2,11 +2,12 @@
 import { Fragment } from 'react';
 import { Disclosure, Menu, Transition } from '@headlessui/react';
 import { BellIcon, MenuIcon, XIcon } from '@heroicons/react/outline';
+import { useNavigate } from 'react-router-dom';
 
 const navigation = [
-    { name: 'Khám phá', href: '#', current: true },
-    { name: 'Bạn bè', href: '#', current: false },
-    { name: 'Khuyến mãi', href: '#', current: false },
+    { name: 'Khám phá', href: '/', current: true },
+    { name: 'Bạn bè', href: '/', current: false },
+    { name: 'Khuyến mãi', href: '/', current: false },
 ];
 
 function classNames(...classes) {
@@ -14,8 +15,14 @@ function classNames(...classes) {
 }
 
 export default function Header() {
+    const navigate = useNavigate();
+    const handleLogout = () => {
+        localStorage.removeItem('username');
+        localStorage.removeItem('token');
+        navigate('/login');
+    };
     return (
-        <Disclosure as="nav" className="bg-slate-300 shadow-md w-full fixed">
+        <Disclosure as="nav" className="bg-slate-300 shadow-md w-full fixed h-16">
             {({ open }) => (
                 <>
                     <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
@@ -65,9 +72,9 @@ export default function Header() {
                                 </div>
                             </div>
                             <div className="flex items-center justify-center">
-                                <div className="flex border-2 rounded">
-                                    <input type="text" className="px-2 py-2 w-80" placeholder="Search..." />
-                                    <button className="flex items-center justify-center px-4 border-l bg-stone-300">
+                                <div className="flex gap-1">
+                                    <input type="text" className="px-2 py-2 w-80 rounded-full" placeholder="Tìm kiếm" />
+                                    <button className="flex items-center justify-center px-4 border-l bg-stone-300 rounded-full">
                                         <svg
                                             className="w-6 h-6 text-violet-600"
                                             fill="currentColor"
@@ -113,13 +120,26 @@ export default function Header() {
                                             <Menu.Item>
                                                 {({ active }) => (
                                                     <a
-                                                        href="#"
+                                                        href="/profile"
                                                         className={classNames(
                                                             active ? 'bg-gray-100' : '',
                                                             'block px-4 py-2 text-sm text-gray-700',
                                                         )}
                                                     >
-                                                        Trang cá nhân
+                                                        Thông tin tài khoản
+                                                    </a>
+                                                )}
+                                            </Menu.Item>
+                                            <Menu.Item>
+                                                {({ active }) => (
+                                                    <a
+                                                        href="/myUpload"
+                                                        className={classNames(
+                                                            active ? 'bg-gray-100' : '',
+                                                            'block px-4 py-2 text-sm text-gray-700',
+                                                        )}
+                                                    >
+                                                        Bài đăng
                                                     </a>
                                                 )}
                                             </Menu.Item>
@@ -138,15 +158,15 @@ export default function Header() {
                                             </Menu.Item>
                                             <Menu.Item>
                                                 {({ active }) => (
-                                                    <a
-                                                        href="/login"
+                                                    <button
+                                                        onClick={handleLogout}
                                                         className={classNames(
                                                             active ? 'bg-gray-100' : '',
                                                             'block px-4 py-2 text-sm text-gray-700',
                                                         )}
                                                     >
                                                         Đăng xuất
-                                                    </a>
+                                                    </button>
                                                 )}
                                             </Menu.Item>
                                         </Menu.Items>

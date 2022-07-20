@@ -1,12 +1,50 @@
 import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import axios from 'axios';
 function Login() {
     let navigate = useNavigate();
     const routeChange = () => {
         let path = `/signup`;
         navigate(path);
     };
+
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+
+    const login = () => {
+        axios
+            .post('http://localhost:9090/auth/login', {
+                username,
+                password,
+            })
+            .then(function (response) {
+                console.log(response.data);
+                // let config = {
+                //     headers: {
+                //         Authorization: response.data,
+                //     },
+                // };
+                window.localStorage.setItem('token', response.data);
+                window.localStorage.setItem('username', username);
+                navigate('/');
+                // axios
+                //     .get('http://localhost:9090/api/account', config)
+                //     .then(function (response) {
+                //         // handle success
+                //         console.log(response);
+                //     })
+                //     .catch(function (error) {
+                //         // handle error
+                //         console.log(error);
+                //     });
+            })
+            .catch(function (error) {
+                console.log(error);
+                alert('Tài khoản hoặc mật khẩu sai');
+            });
+    };
     return (
-        <section className="h-screen">
+        <section className="h-screen w-screen flex justify-center">
             <div className="container px-6 py-12 h-full">
                 <div className="flex justify-center items-center flex-wrap h-full g-6 text-gray-800">
                     <div className="md:w-8/12 lg:w-6/12 mb-12 md:mb-0">
@@ -18,11 +56,13 @@ function Login() {
                     </div>
                     <div className="md:w-8/12 lg:w-5/12 lg:ml-20">
                         <h1 className="text-5xl mb-6 text-center uppercase font-semibold">Đăng nhập</h1>
-                        <form>
+                        <div>
                             {/* Email input */}
                             <div className="mb-6">
                                 <input
                                     type="text"
+                                    value={username}
+                                    onInput={(e) => setUsername(e.target.value)}
                                     className="form-control block w-full px-4 py-2 text-xl font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
                                     placeholder="Username"
                                 />
@@ -31,6 +71,8 @@ function Login() {
                             <div className="mb-6">
                                 <input
                                     type="password"
+                                    value={password}
+                                    onInput={(e) => setPassword(e.target.value)}
                                     className="form-control block w-full px-4 py-2 text-xl font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
                                     placeholder="Password"
                                 />
@@ -59,7 +101,7 @@ function Login() {
                             </div>
                             {/* Submit button */}
                             <button
-                                type="submit"
+                                onClick={login}
                                 className="inline-block px-7 py-3 bg-blue-600 text-white font-medium text-sm leading-snug uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out w-full"
                                 data-mdb-ripple="true"
                                 data-mdb-ripple-color="light"
@@ -77,11 +119,9 @@ function Login() {
                             <div className="flex items-center my-4 before:flex-1 before:border-t before:border-gray-300 before:mt-0.5 after:flex-1 after:border-t after:border-gray-300 after:mt-0.5">
                                 <p className="text-center font-semibold mx-4 mb-0">HOẶC</p>
                             </div>
-                            <a
+                            <button
                                 className="px-7 py-3 text-white font-medium text-sm leading-snug uppercase rounded shadow-md hover:shadow-lg focus:shadow-lg focus:outline-none focus:ring-0 active:shadow-lg transition duration-150 ease-in-out w-full flex justify-center items-center mb-3"
                                 style={{ backgroundColor: '#3b5998' }}
-                                href="#!"
-                                role="button"
                                 data-mdb-ripple="true"
                                 data-mdb-ripple-color="light"
                             >
@@ -98,8 +138,8 @@ function Login() {
                                     />
                                 </svg>
                                 Đăng nhập với Facebook
-                            </a>
-                        </form>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>

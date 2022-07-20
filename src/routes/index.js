@@ -5,6 +5,7 @@ import { HeaderOnly } from '../components/Layout';
 import Home from '../pages/Home';
 import Following from '../pages/Following';
 import Profile from '../pages/Profile';
+import MyUpload from '../pages/MyUpload';
 import Upload from '../pages/Upload';
 import Search from '../pages/Search';
 import Login from '../pages/Login';
@@ -15,7 +16,8 @@ import Detail from '../pages/Detail';
 const publicRoutes = [
     { path: '/', component: Home },
     { path: '/following', component: Following },
-    { path: '/profile', component: Profile },
+    { path: '/profile', component: Profile, layout: HeaderOnly },
+    { path: '/myUpload', component: MyUpload },
     { path: '/upload', component: Upload, layout: HeaderOnly },
     { path: '/search', component: Search, layout: null },
     { path: '/login', component: Login, layout: null },

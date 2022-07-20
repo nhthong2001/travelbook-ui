@@ -1,4 +1,47 @@
+import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import axios from 'axios';
 function SignUp() {
+    const [username, setUsername] = useState('');
+    const [fullName, setFullname] = useState('');
+    const [email, setEmail] = useState('');
+    const [address, setAddress] = useState('');
+    const [password, setPassword] = useState('');
+    const [accountType, setAccountType] = useState('User');
+
+    let navigate = useNavigate();
+    const signUp = () => {
+        if (
+            username === '' ||
+            fullName === '' ||
+            email === '' ||
+            address === '' ||
+            password === '' ||
+            accountType === ''
+        ) {
+            alert('Vui lòng điền đầy đủ thông tin');
+        } else {
+            let account;
+            console.log(accountType);
+            if (accountType === 'user') {
+                account = { username, fullname: fullName, email, address, password, accountType };
+            } else {
+                account = { username, companyName: fullName, email, address, password, accountType };
+            }
+            axios
+                .post('http://localhost:9090/auth/register', account)
+                .then(function (response) {
+                    alert(response.data);
+
+                    navigate('/login');
+                })
+                .catch(function (error) {
+                    // handle error
+                    alert(error.response.data);
+                    console.log(error);
+                });
+        }
+    };
     return (
         <div className="min-w-screen min-h-screen bg-gray-100 flex items-center justify-center px-5 py-5">
             <div
@@ -6,13 +49,13 @@ function SignUp() {
                 style={{ maxWidth: 1000 }}
             >
                 <div className="md:flex w-full">
+                    {/*image */}
                     <div className="hidden md:block w-1/2 bg-indigo-500 py-10 px-10">
                         <svg
                             id="a87032b8-5b37-4b7e-a4d9-4dbfbe394641"
                             data-name="Layer 1"
                             xmlns="http://www.w3.org/2000/svg"
                             width="100%"
-                            height="auto"
                             viewBox="0 0 744.84799 747.07702"
                         >
                             <path
@@ -206,43 +249,55 @@ function SignUp() {
                             />
                         </svg>
                     </div>
+
                     <div className="w-full md:w-1/2 py-10 px-5 md:px-10">
-                        <div className="text-center mb-10">
+                        <div className="text-center mb-5">
                             <h1 className="font-bold text-3xl text-gray-900 uppercase">Đăng ký</h1>
                         </div>
+
+                        {/* form input sign up*/}
                         <div>
+                            {/* Fullname*/}
                             <div className="flex -mx-3">
-                                <div className="w-1/2 px-3 mb-5">
+                                <div className="w-full px-3 mb-5">
                                     <label htmlFor="" className="text-xs font-semibold px-1">
-                                        First name
+                                        Fullname/Company's Name
                                     </label>
                                     <div className="flex">
                                         <div className="w-10 z-10 pl-1 text-center pointer-events-none flex items-center justify-center">
-                                            <i className="mdi mdi-account-outline text-gray-400 text-lg" />
+                                            <i className="mdi mdi-email-outline text-gray-400 text-lg" />
                                         </div>
                                         <input
+                                            value={fullName}
+                                            onInput={(e) => setFullname(e.target.value)}
                                             type="text"
                                             className="w-full -ml-10 pl-10 pr-3 py-2 rounded-lg border-2 border-gray-200 outline-none focus:border-indigo-500"
-                                            placeholder="John"
-                                        />
-                                    </div>
-                                </div>
-                                <div className="w-1/2 px-3 mb-5">
-                                    <label htmlFor="" className="text-xs font-semibold px-1">
-                                        Last name
-                                    </label>
-                                    <div className="flex">
-                                        <div className="w-10 z-10 pl-1 text-center pointer-events-none flex items-center justify-center">
-                                            <i className="mdi mdi-account-outline text-gray-400 text-lg" />
-                                        </div>
-                                        <input
-                                            type="text"
-                                            className="w-full -ml-10 pl-10 pr-3 py-2 rounded-lg border-2 border-gray-200 outline-none focus:border-indigo-500"
-                                            placeholder="Smith"
+                                            placeholder="John Smith"
                                         />
                                     </div>
                                 </div>
                             </div>
+                            {/* Username*/}
+                            <div className="flex -mx-3">
+                                <div className="w-full px-3 mb-5">
+                                    <label htmlFor="" className="text-xs font-semibold px-1">
+                                        Username
+                                    </label>
+                                    <div className="flex">
+                                        <div className="w-10 z-10 pl-1 text-center pointer-events-none flex items-center justify-center">
+                                            <i className="mdi mdi-email-outline text-gray-400 text-lg" />
+                                        </div>
+                                        <input
+                                            value={username}
+                                            onInput={(e) => setUsername(e.target.value)}
+                                            type="text"
+                                            className="w-full -ml-10 pl-10 pr-3 py-2 rounded-lg border-2 border-gray-200 outline-none focus:border-indigo-500"
+                                            placeholder="jonhsmith123"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                            {/* Email*/}
                             <div className="flex -mx-3">
                                 <div className="w-full px-3 mb-5">
                                     <label htmlFor="" className="text-xs font-semibold px-1">
@@ -253,6 +308,8 @@ function SignUp() {
                                             <i className="mdi mdi-email-outline text-gray-400 text-lg" />
                                         </div>
                                         <input
+                                            value={email}
+                                            onInput={(e) => setEmail(e.target.value)}
                                             type="email"
                                             className="w-full -ml-10 pl-10 pr-3 py-2 rounded-lg border-2 border-gray-200 outline-none focus:border-indigo-500"
                                             placeholder="johnsmith@example.com"
@@ -260,8 +317,29 @@ function SignUp() {
                                     </div>
                                 </div>
                             </div>
+                            {/* Address */}
                             <div className="flex -mx-3">
-                                <div className="w-full px-3 mb-12">
+                                <div className="w-full px-3 mb-5">
+                                    <label htmlFor="" className="text-xs font-semibold px-1">
+                                        Address
+                                    </label>
+                                    <div className="flex">
+                                        <div className="w-10 z-10 pl-1 text-center pointer-events-none flex items-center justify-center">
+                                            <i className="mdi mdi-lock-outline text-gray-400 text-lg" />
+                                        </div>
+                                        <input
+                                            value={address}
+                                            onInput={(e) => setAddress(e.target.value)}
+                                            type="text"
+                                            className="w-full -ml-10 pl-10 pr-3 py-2 rounded-lg border-2 border-gray-200 outline-none focus:border-indigo-500"
+                                            placeholder="Ho Chi Minh city"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                            {/* Password */}
+                            <div className="flex -mx-3">
+                                <div className="w-full px-3 mb-5">
                                     <label htmlFor="" className="text-xs font-semibold px-1">
                                         Password
                                     </label>
@@ -270,6 +348,8 @@ function SignUp() {
                                             <i className="mdi mdi-lock-outline text-gray-400 text-lg" />
                                         </div>
                                         <input
+                                            value={password}
+                                            onInput={(e) => setPassword(e.target.value)}
                                             type="password"
                                             className="w-full -ml-10 pl-10 pr-3 py-2 rounded-lg border-2 border-gray-200 outline-none focus:border-indigo-500"
                                             placeholder="************"
@@ -277,9 +357,36 @@ function SignUp() {
                                     </div>
                                 </div>
                             </div>
+                            {/* Account Type*/}
                             <div className="flex -mx-3">
                                 <div className="w-full px-3 mb-5">
-                                    <button className="uppercase block w-full max-w-xs mx-auto bg-indigo-500 hover:bg-indigo-700 focus:bg-indigo-700 text-white rounded-lg px-3 py-3 font-semibold">
+                                    <label htmlFor="accountType" className="text-xs font-semibold px-1">
+                                        Account Type
+                                    </label>
+                                    <div className="flex">
+                                        <div className="w-10 z-10 pl-1 text-center pointer-events-none flex items-center justify-center">
+                                            <i className="mdi mdi-lock-outline text-gray-400 text-lg" />
+                                        </div>
+                                        <select
+                                            defaultValue={accountType}
+                                            onChange={(e) => setAccountType(e.target.value)}
+                                            id="accountType"
+                                            className="w-full -ml-10 pl-10 pr-3 py-2 rounded-lg border-2 border-gray-200 outline-none focus:border-indigo-500"
+                                        >
+                                            <option value="user">User</option>
+                                            <option value="company">Company</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* form input sign up*/}
+                            <div className="flex -mx-3 my-5">
+                                <div className="w-full px-3">
+                                    <button
+                                        onClick={signUp}
+                                        className="uppercase block w-full max-w-xs mx-auto bg-indigo-500 hover:bg-indigo-700 focus:bg-indigo-700 text-white rounded-lg px-3 py-3 font-semibold"
+                                    >
                                         Đăng ký ngay
                                     </button>
                                 </div>

@@ -1,24 +1,50 @@
 import axios from 'axios';
-import { useState, useEffect } from 'react';
-function Home() {
+import { Buffer } from 'buffer';
+import { useState, useLayoutEffect } from 'react';
+function Profile() {
     let config = {
         headers: {
             Authorization: window.localStorage.getItem('token'),
         },
     };
     const [post, setPost] = useState([]);
-    useEffect(() => {
+    const username = window.localStorage.getItem('username');
+    useLayoutEffect(() => {
         axios
-            .get('http://localhost:9090/api/location/all', config)
+            .get(`http://localhost:9090/api/location/mypost/${username}`, config)
             .then(function (response) {
                 // handle success
                 console.log(response.data);
                 setPost(response.data);
+
+                post.forEach((p) => {
+                    axios
+                        .get(`http://localhost:9090/api/location/getimage/${p.id}`, {
+                            headers: {
+                                Authorization: window.localStorage.getItem('token'),
+                            },
+                            responseType: 'arraybuffer',
+                        })
+                        .then(function (response) {
+                            // handle success
+                            console.log(response.data);
+
+                            let base64ImageString = Buffer.from(response.data, 'binary').toString('base64');
+                            let srcValue = 'data:image/png;base64,' + base64ImageString;
+                            p.img = srcValue;
+                            console.log(p.img);
+                        })
+                        .catch(function (error) {
+                            console.log(error);
+                        });
+                });
             })
             .catch(function (error) {
                 // handle error
                 console.log(error);
             });
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return (
@@ -45,7 +71,10 @@ function Home() {
                         {/*Ảnh*/}
                         <img
                             className="p-2 w-full h-[24rem] rounded-[20px] object-cover object-center"
-                            src="https://firebasestorage.googleapis.com/v0/b/thecaffeinecode.appspot.com/o/blog.jpg?alt=media&token=271cb624-94d4-468d-a14d-455377ba75c2"
+                            src={
+                                item.img ||
+                                'https://firebasestorage.googleapis.com/v0/b/thecaffeinecode.appspot.com/o/blog.jpg?alt=media&token=271cb624-94d4-468d-a14d-455377ba75c2'
+                            }
                             alt="blog cover"
                         />
                         {/*Thông tin cơ bản về địa điểm*/}
@@ -109,4 +138,4 @@ function Home() {
     );
 }
 
-export default Home;
+export default Profile;

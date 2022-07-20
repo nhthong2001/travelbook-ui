@@ -2,11 +2,10 @@ import Header from '../components/Header';
 
 function HeaderOnly({ children }) {
     return (
-        <div className="w-full h-screen">
-            <Header className="h-[20vh]" />
-            <div className="h-[8vh]"></div>
-            <div className="grid h-[92vh]">
-                <div className="bg-violet-100 rounded-lg overscroll-auto overflow-y-scroll">{children}</div>
+        <div className="w-full">
+            <Header />
+            <div className="grid pt-[70px] h-screen">
+                <div className="bg-violet-100 rounded-lg">{children}</div>
             </div>
         </div>
     );
