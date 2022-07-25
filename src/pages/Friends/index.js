@@ -1,11 +1,17 @@
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
-function Home() {
+import { useState, useLayoutEffect } from 'react';
+function Profile() {
+    let config = {
+        headers: {
+            Authorization: window.localStorage.getItem('token'),
+        },
+    };
     const [post, setPost] = useState([]);
-    useEffect(() => {
+    const username = window.localStorage.getItem('username');
+    useLayoutEffect(() => {
         axios
-            .get('http://localhost:9090/api/location/all')
+            .get(`http://localhost:9090/api/location/mypost/${username}`, config)
             .then(function (response) {
                 // handle success
                 console.log(
@@ -23,23 +29,14 @@ function Home() {
                 // handle error
                 console.log(error);
             });
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
     let navigate = useNavigate();
     const handleDetail = (item) => {
-        const jwt = window.localStorage.getItem('token');
-
-        if (jwt === null || jwt === '') {
-            navigate('/login');
-            return;
-        }
-        const jwtPayload = JSON.parse(window.atob(jwt.split('.')[1]));
-
-        if (new Date(jwtPayload.exp * 1000) < new Date()) {
-            navigate('/login');
-        } else {
-            window.localStorage.setItem('detailPost', JSON.stringify(item));
-            navigate(`/detail/${+item.id}`);
-        }
+        console.log(item);
+        window.localStorage.setItem('detaiId', item.id);
+        navigate(`/detail/${item.id}`);
     };
     return (
         <div className="justify-center grid">
@@ -67,7 +64,7 @@ function Home() {
                             className="p-2 w-full h-[24rem] rounded-[20px] object-cover object-center"
                             src={
                                 item.link_avatar ||
-                                'https://i0.wp.com/datvandon.net/wp-content/uploads/2019/11/vinh-ha-long-o-tinh-nao-viet-nam.jpeg?fit=960%2C720&ssl=1'
+                                'https://firebasestorage.googleapis.com/v0/b/thecaffeinecode.appspot.com/o/blog.jpg?alt=media&token=271cb624-94d4-468d-a14d-455377ba75c2'
                             }
                             alt="blog cover"
                         />
@@ -132,4 +129,4 @@ function Home() {
     );
 }
 
-export default Home;
+export default Profile;

@@ -7,6 +7,7 @@ import Following from '../pages/Following';
 import Profile from '../pages/Profile';
 import MyUpload from '../pages/MyUpload';
 import Upload from '../pages/Upload';
+import Friends from '../pages/Friends';
 import Search from '../pages/Search';
 import Login from '../pages/Login';
 import SignUp from '../pages/SignUp';
@@ -19,6 +20,7 @@ const publicRoutes = [
     { path: '/profile', component: Profile, layout: HeaderOnly },
     { path: '/myUpload', component: MyUpload },
     { path: '/upload', component: Upload, layout: HeaderOnly },
+    { path: '/friends', component: Friends },
     { path: '/search', component: Search, layout: null },
     { path: '/login', component: Login, layout: null },
     { path: '/signup', component: SignUp, layout: null },

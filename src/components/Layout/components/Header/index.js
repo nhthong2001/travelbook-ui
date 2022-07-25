@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 
 const navigation = [
     { name: 'Khám phá', href: '/', current: true },
-    { name: 'Bạn bè', href: '/', current: false },
+    { name: 'Tìm Bạn', href: '/friends', current: false },
     { name: 'Khuyến mãi', href: '/', current: false },
 ];
 
