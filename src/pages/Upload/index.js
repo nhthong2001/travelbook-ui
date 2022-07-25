@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 function Upload() {
     // eslint-disable-next-line no-unused-vars
@@ -11,14 +12,18 @@ function Upload() {
         time_open: '07:00',
         time_close: '21:00',
         type_id: '1',
-        ratting: 5,
+        rating: 5,
         description: '',
     });
+    let navigate = useNavigate();
     let bodyFormData = new FormData();
     const handleUpload = (e) => {
         e?.preventDefault();
         for (var key in location) {
             bodyFormData.set(key, location[key]);
+        }
+        for (const value of bodyFormData.values()) {
+            console.log(value);
         }
         axios({
             method: 'post',
@@ -27,6 +32,20 @@ function Upload() {
             headers: { 'Content-Type': 'multipart/form-data', Authorization: window.localStorage.getItem('token') },
         })
             .then(function (response) {
+                alert('Đăng tải thành công');
+                setLocation({
+                    create_by: window.localStorage.getItem('username'),
+                    name: '',
+                    address: '',
+                    phone_number: '',
+                    website: '',
+                    time_open: '07:00',
+                    time_close: '21:00',
+                    type_id: '1',
+                    ratting: 5,
+                    description: '',
+                });
+                navigate('/myUpload');
                 //handle success
                 console.log(response);
             })
@@ -154,7 +173,7 @@ function Upload() {
                                         </label>
                                         <input
                                             type="number"
-                                            onInput={(e) => (location.ratting = e.target.value)}
+                                            onInput={(e) => (location.rating = +e.target.value)}
                                             id="rate"
                                             min="1"
                                             max="5"

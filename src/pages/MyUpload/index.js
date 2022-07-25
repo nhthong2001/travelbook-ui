@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Buffer } from 'buffer';
+import { useNavigate } from 'react-router-dom';
 import { useState, useLayoutEffect } from 'react';
 function Profile() {
     let config = {
@@ -14,30 +14,16 @@ function Profile() {
             .get(`http://localhost:9090/api/location/mypost/${username}`, config)
             .then(function (response) {
                 // handle success
-                console.log(response.data);
-                setPost(response.data);
-
-                post.forEach((p) => {
-                    axios
-                        .get(`http://localhost:9090/api/location/getimage/${p.id}`, {
-                            headers: {
-                                Authorization: window.localStorage.getItem('token'),
-                            },
-                            responseType: 'arraybuffer',
-                        })
-                        .then(function (response) {
-                            // handle success
-                            console.log(response.data);
-
-                            let base64ImageString = Buffer.from(response.data, 'binary').toString('base64');
-                            let srcValue = 'data:image/png;base64,' + base64ImageString;
-                            p.img = srcValue;
-                            console.log(p.img);
-                        })
-                        .catch(function (error) {
-                            console.log(error);
-                        });
-                });
+                console.log(
+                    response.data.sort((a, b) => {
+                        return a.id - b.id;
+                    }),
+                );
+                setPost(
+                    response.data.sort((a, b) => {
+                        return a.id - b.id;
+                    }),
+                );
             })
             .catch(function (error) {
                 // handle error
@@ -46,7 +32,12 @@ function Profile() {
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
-
+    let navigate = useNavigate();
+    const handleDetail = (item) => {
+        console.log(item);
+        window.localStorage.setItem('detaiId', item.id);
+        navigate(`/detail/${item.id}`);
+    };
     return (
         <div className="justify-center grid">
             {post.map((item) => (
@@ -72,7 +63,7 @@ function Profile() {
                         <img
                             className="p-2 w-full h-[24rem] rounded-[20px] object-cover object-center"
                             src={
-                                item.img ||
+                                item.link_avatar ||
                                 'https://firebasestorage.googleapis.com/v0/b/thecaffeinecode.appspot.com/o/blog.jpg?alt=media&token=271cb624-94d4-468d-a14d-455377ba75c2'
                             }
                             alt="blog cover"
@@ -84,7 +75,7 @@ function Profile() {
                             </h2>
                             <h1 className="title-font text-xl font-medium text-gray-900 mb-12">{item.name}</h1>
                             <div className="text-lg flex items-center flex-wrap ">
-                                <a href="/" className="text-green-800  md:mb-2 lg:mb-0">
+                                <button onClick={() => handleDetail(item)} className="text-green-800  md:mb-2 lg:mb-0">
                                     <p className="inline-flex items-center">
                                         Chi tiết
                                         <svg
@@ -100,7 +91,7 @@ function Profile() {
                                             <path d="M12 5l7 7-7 7" />
                                         </svg>
                                     </p>
-                                </a>
+                                </button>
                                 <span className="text-gray-400 mr-3 inline-flex items-center lg:ml-auto md:ml-0 ml-auto leading-none text-sm pr-3 py-1 border-r-2 border-gray-200">
                                     <svg
                                         className="w-4 h-4 mr-1"

@@ -22,7 +22,7 @@ const publicRoutes = [
     { path: '/search', component: Search, layout: null },
     { path: '/login', component: Login, layout: null },
     { path: '/signup', component: SignUp, layout: null },
-    { path: '/detail/1', component: Detail, layout: HeaderOnly },
+    { path: '/detail/:id', component: Detail, layout: HeaderOnly },
 ];
 
 const privateRoutes = [];

@@ -1,26 +1,48 @@
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 function Home() {
-    let config = {
-        headers: {
-            Authorization: window.localStorage.getItem('token'),
-        },
-    };
     const [post, setPost] = useState([]);
     useEffect(() => {
         axios
-            .get('http://localhost:9090/api/location/all', config)
+            .get('http://localhost:9090/api/location/all')
             .then(function (response) {
                 // handle success
-                console.log(response.data);
-                setPost(response.data);
+                console.log(
+                    response.data.sort((a, b) => {
+                        return a.id - b.id;
+                    }),
+                );
+                setPost(
+                    response.data.sort((a, b) => {
+                        return a.id - b.id;
+                    }),
+                );
             })
             .catch(function (error) {
                 // handle error
                 console.log(error);
             });
     }, []);
-
+    let navigate = useNavigate();
+    const handleDetail = (item) => {
+        console.log(item);
+        window.localStorage.setItem('detaiId', item.id);
+        const jwt = window.localStorage.getItem('token');
+        //const jwt =
+        //  'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJyb290IiwiaWF0IjoxNjU2OTAxNjU2LCJleHAiOjE2NTY5ODgwNTZ9.g5xyCrJQ7U61EUiF93JOcx-ifV44g93jECVhbbXibdBynNRBu-BB0QT_hqDg9Sbq8LOzZNQevLM4AOWcwiXf2w';
+        console.log(jwt);
+        if (jwt === null || jwt === '') {
+            navigate('/login');
+            return;
+        }
+        const jwtPayload = JSON.parse(window.atob(jwt.split('.')[1]));
+        console.log(new Date(jwtPayload.exp * 1000));
+        console.log(new Date());
+        if (new Date(jwtPayload.exp * 1000) < new Date()) {
+            navigate('/login');
+        } else navigate(`/detail/${item.id}`);
+    };
     return (
         <div className="justify-center grid">
             {post.map((item) => (
@@ -45,7 +67,10 @@ function Home() {
                         {/*Ảnh*/}
                         <img
                             className="p-2 w-full h-[24rem] rounded-[20px] object-cover object-center"
-                            src="https://firebasestorage.googleapis.com/v0/b/thecaffeinecode.appspot.com/o/blog.jpg?alt=media&token=271cb624-94d4-468d-a14d-455377ba75c2"
+                            src={
+                                item.link_avatar ||
+                                'https://i0.wp.com/datvandon.net/wp-content/uploads/2019/11/vinh-ha-long-o-tinh-nao-viet-nam.jpeg?fit=960%2C720&ssl=1'
+                            }
                             alt="blog cover"
                         />
                         {/*Thông tin cơ bản về địa điểm*/}
@@ -55,7 +80,7 @@ function Home() {
                             </h2>
                             <h1 className="title-font text-xl font-medium text-gray-900 mb-12">{item.name}</h1>
                             <div className="text-lg flex items-center flex-wrap ">
-                                <a href="/" className="text-green-800  md:mb-2 lg:mb-0">
+                                <button onClick={() => handleDetail(item)} className="text-green-800  md:mb-2 lg:mb-0">
                                     <p className="inline-flex items-center">
                                         Chi tiết
                                         <svg
@@ -71,7 +96,7 @@ function Home() {
                                             <path d="M12 5l7 7-7 7" />
                                         </svg>
                                     </p>
-                                </a>
+                                </button>
                                 <span className="text-gray-400 mr-3 inline-flex items-center lg:ml-auto md:ml-0 ml-auto leading-none text-sm pr-3 py-1 border-r-2 border-gray-200">
                                     <svg
                                         className="w-4 h-4 mr-1"

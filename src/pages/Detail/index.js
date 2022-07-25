@@ -1,10 +1,32 @@
+import axios from 'axios';
+import { useState, useEffect } from 'react';
 function Detail() {
+    let config = {
+        headers: {
+            Authorization: window.localStorage.getItem('token'),
+        },
+    };
+    const [post, setPost] = useState({});
+    useEffect(() => {
+        const id = window.localStorage.getItem('detaiId');
+        axios
+            .get(`http://localhost:9090/api/location/${id}`, config)
+            .then(function (response) {
+                // handle success
+                console.log(response.data);
+                setPost(response.data);
+            })
+            .catch(function (error) {
+                // handle error
+                console.log(error);
+            });
+    }, []);
     return (
         <>
             <section>
                 <div className="relative max-w-screen-xl px-4 py-8 mx-auto">
                     <div>
-                        <h1 className="text-2xl font-bold lg:text-3xl">Tên của địa điểm du lịch</h1>
+                        <h1 className="text-2xl font-bold lg:text-3xl">{post.name}</h1>
                     </div>
                     <div className="grid gap-8 lg:items-start lg:grid-cols-4">
                         <div className="lg:col-span-3">
@@ -14,29 +36,15 @@ function Detail() {
                                     src="https://i0.wp.com/datvandon.net/wp-content/uploads/2019/11/vinh-ha-long-o-tinh-nao-viet-nam.jpeg?fit=960%2C720&ssl=1"
                                     className="w-full rounded-xl h-72 lg:h-[540px] object-cover"
                                 />
-                                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 rounded-full bg-black/75 text-white px-3 py-1.5 inline-flex items-center">
-                                    <svg
-                                        className="w-4 h-4"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                        stroke="currentColor"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"
-                                        />
-                                    </svg>
-                                    <span className="text-xs ml-1.5">Hover to zoom</span>
-                                </div>
                             </div>
                             <ul className="flex gap-1 mt-1">
                                 <li>
                                     <img
                                         className="object-cover w-16 h-16 rounded-md"
-                                        src="https://i0.wp.com/datvandon.net/wp-content/uploads/2019/11/vinh-ha-long-o-tinh-nao-viet-nam.jpeg?fit=960%2C720&ssl=1"
+                                        src={
+                                            post.link_avatar ||
+                                            'https://i0.wp.com/datvandon.net/wp-content/uploads/2019/11/vinh-ha-long-o-tinh-nao-viet-nam.jpeg?fit=960%2C720&ssl=1'
+                                        }
                                         alt=""
                                     />
                                 </li>
@@ -53,7 +61,7 @@ function Detail() {
                             <form className="space-y-4 lg:pt-8">
                                 <div className="p-4 bg-gray-100 border rounded">
                                     <p className="text-sm">
-                                        <span className="block">Đây là địa chỉ chi tiết!!!</span>
+                                        <span className="block">{post.address}</span>
                                     </p>
                                 </div>
                                 <div>
@@ -75,60 +83,43 @@ function Detail() {
                         </div>
                         <div className="lg:col-span-3">
                             <div className="prose max-w-none">
+                                <p>Mô tả: {post.description}</p>
                                 <p>
-                                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Autem ad labore nostrum, a
-                                    explicabo iste est dolorem deserunt id ullam magni accusamus saepe, nulla sed sint
-                                    reiciendis, aperiam cumque officiis!
+                                    Người đăng: <a href="/#">{post.create_by}</a>
                                 </p>
-                                <p>
-                                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Modi eveniet ipsam mollitia
-                                    nesciunt illo! Suscipit, corrupti!
-                                </p>
-                                <h3>Features</h3>
+                                <h3>Thông tin:</h3>
                                 <ul>
-                                    <li>Smooth neck design</li>
-                                    <li>Breathable fabric</li>
-                                    <li>Odour prevention</li>
-                                    <li>Made from recycled materials</li>
+                                    <li>Số điện thoại: {post.phone_number}</li>
+                                    <li>Giờ mở cửa: {post.time_open}</li>
+                                    <li>Giờ đóng cửa: {post.time_close}</li>
+                                    <li>Website: {post.website}</li>
+                                    <li>Loại: {post.type_id}</li>
+                                    <li>Điểm: {post.rating} sao</li>
                                 </ul>
                             </div>
                             {/*Commnent */}
                             <div className="pt-10">
                                 <form className="w-full bg-white rounded-lg px-4">
                                     <div className="flex flex-wrap -mx-3 mb-6">
-                                        <h2 className="px-4 pt-3 pb-2 text-gray-800 text-lg">Add a new comment</h2>
                                         <div className="w-full md:w-full px-3 mb-2 mt-2">
                                             <textarea
                                                 className="bg-gray-100 rounded border border-gray-400 leading-normal resize-none w-full h-20 py-2 px-3 font-medium placeholder-gray-700 focus:outline-none focus:bg-white"
                                                 name="body"
-                                                placeholder="Type Your Comment"
+                                                placeholder="Nhập bình luận..."
                                                 required=""
                                                 defaultValue={''}
                                             />
                                         </div>
                                         <div className="w-full md:w-full flex items-start md:w-full px-3">
-                                            <div className="flex items-start w-1/2 text-gray-700 px-2 mr-auto">
-                                                <svg
-                                                    fill="none"
-                                                    className="w-5 h-5 text-gray-600 mr-1"
-                                                    viewBox="0 0 24 24"
-                                                    stroke="currentColor"
-                                                >
-                                                    <path
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                        strokeWidth={2}
-                                                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                                                    />
-                                                </svg>
-                                                <p className="text-xs md:text-sm pt-px">Some HTML is okay.</p>
-                                            </div>
-                                            <div className="-mr-1">
-                                                <input
+                                            <div className="flex items-start w-1/2 text-gray-700 px-2 mr-auto"></div>
+                                            <div className="-mr-1 mb-2">
+                                                <button
                                                     type="submit"
                                                     className="bg-white text-gray-700 font-medium py-1 px-4 border border-gray-400 rounded-lg tracking-wide mr-1 hover:bg-gray-100"
                                                     defaultValue="Post Comment"
-                                                />
+                                                >
+                                                    Bình luận
+                                                </button>
                                             </div>
                                         </div>
                                     </div>

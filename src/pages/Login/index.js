@@ -11,7 +11,8 @@ function Login() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
-    const login = () => {
+    const login = (e) => {
+        e.preventDefault();
         axios
             .post('http://localhost:9090/auth/login', {
                 username,
@@ -54,7 +55,7 @@ function Login() {
                             alt="Phone"
                         />
                     </div>
-                    <div className="md:w-8/12 lg:w-5/12 lg:ml-20">
+                    <form onSubmit={login} className="md:w-8/12 lg:w-5/12 lg:ml-20">
                         <h1 className="text-5xl mb-6 text-center uppercase font-semibold">Đăng nhập</h1>
                         <div>
                             {/* Email input */}
@@ -102,6 +103,7 @@ function Login() {
                             {/* Submit button */}
                             <button
                                 onClick={login}
+                                type="submit"
                                 className="inline-block px-7 py-3 bg-blue-600 text-white font-medium text-sm leading-snug uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out w-full"
                                 data-mdb-ripple="true"
                                 data-mdb-ripple-color="light"
@@ -140,7 +142,7 @@ function Login() {
                                 Đăng nhập với Facebook
                             </button>
                         </div>
-                    </div>
+                    </form>
                 </div>
             </div>
         </section>

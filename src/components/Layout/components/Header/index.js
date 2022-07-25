@@ -22,7 +22,7 @@ export default function Header() {
         navigate('/login');
     };
     return (
-        <Disclosure as="nav" className="bg-slate-300 shadow-md w-full fixed h-16">
+        <Disclosure as="nav" className="bg-slate-300 shadow-md w-full fixed h-16 z-50">
             {({ open }) => (
                 <>
                     <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
@@ -139,7 +139,7 @@ export default function Header() {
                                                             'block px-4 py-2 text-sm text-gray-700',
                                                         )}
                                                     >
-                                                        Bài đăng
+                                                        Bài đã đăng
                                                     </a>
                                                 )}
                                             </Menu.Item>
@@ -158,10 +158,24 @@ export default function Header() {
                                             </Menu.Item>
                                             <Menu.Item>
                                                 {({ active }) => (
+                                                    <a
+                                                        href="/following"
+                                                        className={classNames(
+                                                            active ? 'bg-gray-100' : '',
+                                                            'block px-4 py-2 text-sm text-gray-700',
+                                                        )}
+                                                    >
+                                                        Địa điểm yêu thích
+                                                    </a>
+                                                )}
+                                            </Menu.Item>
+
+                                            <Menu.Item>
+                                                {({ active }) => (
                                                     <button
                                                         onClick={handleLogout}
                                                         className={classNames(
-                                                            active ? 'bg-gray-100' : '',
+                                                            active ? 'bg-gray-100 w-full text-left' : '',
                                                             'block px-4 py-2 text-sm text-gray-700',
                                                         )}
                                                     >
