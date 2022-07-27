@@ -10,8 +10,13 @@ function Detail() {
     const [post, setPost] = useState({});
     const [comments, setComments] = useState([]);
     const [comment, setComment] = useState('');
+    const [isVoted, setIsVoted] = useState(false);
+    const [rate, setRate] = useState(0);
+    const [rateInfo, setRateInfo] = useState({ create_by: null, pointRating: 0 });
 
     const location = JSON.parse(window.localStorage.getItem('detailPost'));
+    const username = window.localStorage.getItem('username');
+
     useEffect(() => {
         axios
             .get(`http://localhost:9090/api/location/${location.id}`, config)
@@ -32,6 +37,22 @@ function Detail() {
                 // handle success
                 console.log(response.data);
                 setComments(response.data);
+            })
+            .catch(function (error) {
+                // handle error
+                console.log(error);
+            });
+    }, []);
+    useEffect(() => {
+        axios
+            .get(`http://localhost:9090/api/location/ratting/${location.unique_id}/${username}`, config)
+            .then(function (response) {
+                // handle success
+                console.log(response);
+                if (response.data !== null) {
+                    setRateInfo(response.data);
+                    setRate(response.data.pointRating);
+                }
             })
             .catch(function (error) {
                 // handle error
@@ -62,6 +83,42 @@ function Detail() {
                     alert('Có lỗi xảy ra khi bình luận');
                 });
         }
+    };
+    const handleVote = () => {
+        setIsVoted(!isVoted);
+    };
+
+    const handleRate = () => {
+        const now = new Date();
+        const yyyy = now.getFullYear();
+        let mm = now.getMonth() + 1; // Months start at 0!
+        let dd = now.getDate();
+
+        if (dd < 10) dd = '0' + dd;
+        if (mm < 10) mm = '0' + mm;
+
+        const formattedToday = yyyy + '-' + mm + '-' + dd;
+        if (rateInfo.pointRating !== rate) {
+            const data = {
+                create_by: username,
+                location_id: location.unique_id,
+                pointRating: rate,
+                date: formattedToday,
+            };
+            if (typeof rateInfo.id === 'number') {
+                data.id = rateInfo.id;
+            }
+
+            axios
+                .post('http://localhost:9090/api/location/ratting', data, config)
+                .then(function (response) {
+                    window.location.reload();
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+        }
+        setIsVoted(!isVoted);
     };
     return (
         <>
@@ -100,7 +157,7 @@ function Detail() {
                             </ul>
                         </div>
                         <div className="lg:top-0 lg:sticky">
-                            <form className="space-y-4 lg:pt-8">
+                            <div className="space-y-4 lg:pt-8">
                                 <div className="p-4 bg-gray-100 border rounded">
                                     <p className="text-sm">
                                         <span className="block">{post.address}</span>
@@ -110,18 +167,41 @@ function Detail() {
                                     <p className="text-xl font-bold">FREE</p>
                                 </div>
                                 <button
-                                    type="submit"
+                                    type="button"
                                     className="w-full px-6 py-3 text-sm font-bold tracking-wide text-white uppercase bg-red-700 rounded"
                                 >
                                     Thêm vào yêu thích
                                 </button>
                                 <button
                                     type="button"
-                                    className="w-full px-6 py-3 text-sm font-bold tracking-wide uppercase bg-gray-100 border border-gray-300 rounded"
+                                    onClick={handleVote}
+                                    className="w-full px-6 py-3 text-sm font-bold tracking-wide uppercase bg-yellow-200 border border-gray-300 rounded"
                                 >
                                     Đánh giá
                                 </button>
-                            </form>
+                                {isVoted && (
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <input
+                                            type="number"
+                                            id="point"
+                                            defaultValue={rateInfo?.pointRating}
+                                            onChange={(e) => {
+                                                setRate(e.target.value === null ? 0 : +e.target.value);
+                                            }}
+                                            min="1"
+                                            max="5"
+                                            className="w-full px-6 py-3 text-sm font-bold tracking-wide uppercase bg-gray-100 border border-gray-300 rounded"
+                                        ></input>
+                                        <button
+                                            type="button"
+                                            onClick={handleRate}
+                                            className="w-full px-6 py-3 text-sm font-bold tracking-wide uppercase bg-gray-100 border border-gray-300 rounded"
+                                        >
+                                            Bình chọn
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
                         </div>
                         <div className="lg:col-span-3">
                             <div className="prose max-w-none">
@@ -195,17 +275,21 @@ function Detail() {
                                                 </div>
                                                 {/* Rate */}
                                                 <div>
-                                                    <div className="flex items-center gap-1">
-                                                        <svg
-                                                            className="inline-block h-5 w-5 text-yellow-400"
-                                                            fill="currentColor"
-                                                            viewBox="0 0 20 20"
-                                                            xmlns="http://www.w3.org/2000/svg"
-                                                        >
-                                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                                        </svg>{' '}
-                                                        5
-                                                    </div>
+                                                    {item.point === -1 ? (
+                                                        <></>
+                                                    ) : (
+                                                        <div className="flex items-center gap-1">
+                                                            <svg
+                                                                className="inline-block h-5 w-5 text-yellow-400"
+                                                                fill="currentColor"
+                                                                viewBox="0 0 20 20"
+                                                                xmlns="http://www.w3.org/2000/svg"
+                                                            >
+                                                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                                            </svg>{' '}
+                                                            {item.point}
+                                                        </div>
+                                                    )}
                                                 </div>
                                             </div>
                                             {/* Context */}
